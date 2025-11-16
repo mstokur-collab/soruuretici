@@ -1,0 +1,2 @@
+# soruuretici
+soru üretme fabrikası
