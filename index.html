@@ -3,15 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LGS İngilizce Soru Üretici | ChatGPT</title>
+    <title>LGS İngilizce Soru Üretici | AI</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🎓 LGS İngilizce Soru Üretici</h1>
-            <p class="subtitle">ChatGPT ile profesyonel sınav soruları</p>
+            <p class="subtitle" id="headerSubtitle">AI ile profesyonel sınav soruları</p>
         </header>
+
+        <!-- AI Provider Seçimi -->
+        <div class="card">
+            <h2>🤖 AI Provider Seçimi</h2>
+            <div class="provider-selection">
+                <label class="provider-option">
+                    <input type="radio" name="aiProvider" value="chatgpt" id="providerChatGPT" checked>
+                    <div class="provider-card">
+                        <div class="provider-icon">🟢</div>
+                        <div class="provider-info">
+                            <strong>ChatGPT</strong>
+                            <span>OpenAI GPT-4</span>
+                        </div>
+                    </div>
+                </label>
+                <label class="provider-option">
+                    <input type="radio" name="aiProvider" value="gemini" id="providerGemini">
+                    <div class="provider-card">
+                        <div class="provider-icon">🔵</div>
+                        <div class="provider-info">
+                            <strong>Gemini</strong>
+                            <span>Google AI</span>
+                        </div>
+                    </div>
+                </label>
+            </div>
+        </div>
 
         <!-- API Key Bölümü -->
         <div id="apiKeySection" class="card">
@@ -24,7 +51,7 @@
                 <input
                     type="password"
                     id="apiKeyInput"
-                    placeholder="OpenAI API Key'inizi buraya girin"
+                    placeholder="API Key'inizi buraya girin"
                     autocomplete="off"
                 >
                 <button id="toggleApiKey" class="btn-icon" title="Göster/Gizle">👁️</button>
@@ -33,12 +60,14 @@
                 <button id="saveApiKey" class="btn btn-primary">Kaydet</button>
                 <button id="clearApiKey" class="btn btn-secondary">Temizle</button>
             </div>
-            <p class="help-text">
-                <strong>OpenAI API Key nasıl alınır?</strong><br>
-                1. <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>'a gidin<br>
-                2. "Create new secret key" butonuna tıklayın<br>
-                3. Oluşan key'i kopyalayıp buraya yapıştırın
-            </p>
+            <div id="apiKeyHelp" class="help-text">
+                <strong id="apiKeyHelpTitle">OpenAI API Key nasıl alınır?</strong><br>
+                <span id="apiKeyHelpContent">
+                    1. <a href="https://platform.openai.com/api-keys" target="_blank" id="apiKeyLink">OpenAI Platform</a>'a gidin<br>
+                    2. "Create new secret key" butonuna tıklayın<br>
+                    3. Oluşan key'i kopyalayıp buraya yapıştırın
+                </span>
+            </div>
         </div>
 
         <!-- Soru Üretim Bölümü -->
@@ -91,7 +120,7 @@
         <div id="loadingSection" class="card loading-card" style="display: none;">
             <div class="loader"></div>
             <p class="loading-text">Profesyonel sorular üretiliyor...</p>
-            <p class="loading-subtext">ChatGPT, MEB standartlarında sorular hazırlıyor</p>
+            <p class="loading-subtext" id="loadingSubtext">AI, MEB standartlarında sorular hazırlıyor</p>
         </div>
 
         <!-- Sonuç Bölümü -->
@@ -109,11 +138,12 @@
     </div>
 
     <footer>
-        <p>Powered by <strong>ChatGPT</strong> • LGS İngilizce Hazırlık Asistanı</p>
+        <p>Powered by <strong id="footerProvider">AI</strong> • LGS İngilizce Hazırlık Asistanı</p>
     </footer>
 
     <script src="js/prompts.js"></script>
     <script src="js/chatgpt.js"></script>
+    <script src="js/gemini.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
