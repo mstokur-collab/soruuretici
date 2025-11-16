@@ -74,10 +74,10 @@ class LGSQuestionGenerator {
      * LocalStorage'dan API Key yükle
      */
     loadApiKeyFromStorage() {
-        const savedKey = localStorage.getItem('gemini_api_key');
+        const savedKey = localStorage.getItem('openai_api_key');
         if (savedKey) {
             this.apiKeyInput.value = savedKey;
-            geminiAPI.setApiKey(savedKey);
+            chatgptAPI.setApiKey(savedKey);
         }
     }
 
@@ -85,7 +85,7 @@ class LGSQuestionGenerator {
      * API Key durumunu kontrol et
      */
     async checkApiKeyStatus() {
-        const savedKey = localStorage.getItem('gemini_api_key');
+        const savedKey = localStorage.getItem('openai_api_key');
 
         if (!savedKey) {
             this.updateApiStatus(false, 'API Key girilmedi');
@@ -95,7 +95,7 @@ class LGSQuestionGenerator {
 
         this.updateApiStatus(null, 'Kontrol ediliyor...');
 
-        const validation = await geminiAPI.validateApiKey();
+        const validation = await chatgptAPI.validateApiKey();
 
         if (validation.valid) {
             this.updateApiStatus(true, 'API Key aktif ve geçerli ✓');
@@ -139,11 +139,11 @@ class LGSQuestionGenerator {
         this.saveApiKeyBtn.disabled = true;
 
         try {
-            geminiAPI.setApiKey(apiKey);
-            const validation = await geminiAPI.validateApiKey();
+            chatgptAPI.setApiKey(apiKey);
+            const validation = await chatgptAPI.validateApiKey();
 
             if (validation.valid) {
-                localStorage.setItem('gemini_api_key', apiKey);
+                localStorage.setItem('openai_api_key', apiKey);
                 this.updateApiStatus(true, 'API Key başarıyla kaydedildi ✓');
                 this.questionGeneratorSection.style.display = 'block';
                 this.showNotification('API Key başarıyla kaydedildi!', 'success');
@@ -168,8 +168,8 @@ class LGSQuestionGenerator {
         }
 
         this.apiKeyInput.value = '';
-        localStorage.removeItem('gemini_api_key');
-        geminiAPI.setApiKey('');
+        localStorage.removeItem('openai_api_key');
+        chatgptAPI.setApiKey('');
         this.updateApiStatus(false, 'API Key temizlendi');
         this.questionGeneratorSection.style.display = 'none';
         this.resultsSection.style.display = 'none';
@@ -212,15 +212,20 @@ class LGSQuestionGenerator {
             console.log('Gönderilen prompt:', prompt);
 
             // API çağrısı
-            const result = await geminiAPI.generateQuestions(prompt, {
+            const result = await chatgptAPI.generateQuestions(prompt, {
                 temperature: 0.9,
-                topP: 0.95,
-                maxOutputTokens: 8192
+                maxTokens: 4000
             });
 
             if (result.success) {
-                this.currentQuestions = result.data;
-                this.displayQuestions(result.data, type);
+                // ChatGPT yanıtını işle - eğer "questions" anahtarı varsa onu kullan
+                let questionsData = result.data;
+                if (questionsData.questions) {
+                    questionsData = questionsData.questions;
+                }
+
+                this.currentQuestions = questionsData;
+                this.displayQuestions(questionsData, type);
                 this.showNotification('Sorular başarıyla oluşturuldu!', 'success');
             } else {
                 throw new Error(result.error || 'Soru üretimi başarısız');
