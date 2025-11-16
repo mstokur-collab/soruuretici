@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGS İngilizce Soru Üretici | Gemini AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 LGS İngilizce Soru Üretici</h1>
+            <p class="subtitle">Gemini 2.5 Pro ile profesyonel sınav soruları</p>
+        </header>
+
+        <!-- API Key Bölümü -->
+        <div id="apiKeySection" class="card">
+            <h2>🔑 API Key Ayarları</h2>
+            <div class="api-status" id="apiStatus">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">API Key girilmedi</span>
+            </div>
+            <div class="input-group">
+                <input
+                    type="password"
+                    id="apiKeyInput"
+                    placeholder="Gemini API Key'inizi buraya girin"
+                    autocomplete="off"
+                >
+                <button id="toggleApiKey" class="btn-icon" title="Göster/Gizle">👁️</button>
+            </div>
+            <div class="button-group">
+                <button id="saveApiKey" class="btn btn-primary">Kaydet</button>
+                <button id="clearApiKey" class="btn btn-secondary">Temizle</button>
+            </div>
+            <p class="help-text">
+                <strong>Gemini API Key nasıl alınır?</strong><br>
+                1. <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>'ya gidin<br>
+                2. "Create API Key" butonuna tıklayın<br>
+                3. Oluşan key'i kopyalayıp buraya yapıştırın
+            </p>
+        </div>
+
+        <!-- Soru Üretim Bölümü -->
+        <div id="questionGeneratorSection" class="card" style="display: none;">
+            <h2>📝 Soru Üretici</h2>
+
+            <div class="form-group">
+                <label for="questionType">Soru Tipi:</label>
+                <select id="questionType" class="form-control">
+                    <option value="reading">📖 Reading Comprehension (Okuma Parçası)</option>
+                    <option value="grammar">📚 Grammar (Dilbilgisi)</option>
+                    <option value="vocabulary">📝 Vocabulary (Kelime Bilgisi)</option>
+                    <option value="dialogue">💬 Dialogue Completion (Diyalog Tamamlama)</option>
+                    <option value="sentence">✍️ Sentence Completion (Cümle Tamamlama)</option>
+                    <option value="visual">🖼️ Visual-Based (Görsel Tabanlı)</option>
+                    <option value="mixed">🎲 Mixed (Karışık)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="difficulty">Zorluk Seviyesi:</label>
+                <select id="difficulty" class="form-control">
+                    <option value="easy">Kolay</option>
+                    <option value="medium" selected>Orta (LGS Standart)</option>
+                    <option value="hard">Zor (LGS Üstü)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="questionCount">Soru Sayısı:</label>
+                <input type="number" id="questionCount" class="form-control" min="1" max="20" value="5">
+            </div>
+
+            <div class="form-group">
+                <label for="topic">Konu/Tema (İsteğe bağlı):</label>
+                <input
+                    type="text"
+                    id="topic"
+                    class="form-control"
+                    placeholder="Örn: Daily Routines, Weather, Shopping..."
+                >
+            </div>
+
+            <button id="generateQuestions" class="btn btn-success btn-large">
+                🚀 Soru Üret
+            </button>
+        </div>
+
+        <!-- Yükleme Göstergesi -->
+        <div id="loadingSection" class="card loading-card" style="display: none;">
+            <div class="loader"></div>
+            <p class="loading-text">Profesyonel sorular üretiliyor...</p>
+            <p class="loading-subtext">Gemini AI, MEB standartlarında sorular hazırlıyor</p>
+        </div>
+
+        <!-- Sonuç Bölümü -->
+        <div id="resultsSection" class="card" style="display: none;">
+            <div class="results-header">
+                <h2>✅ Üretilen Sorular</h2>
+                <div class="button-group">
+                    <button id="copyQuestions" class="btn btn-secondary">📋 Kopyala</button>
+                    <button id="downloadQuestions" class="btn btn-secondary">💾 İndir</button>
+                    <button id="printQuestions" class="btn btn-secondary">🖨️ Yazdır</button>
+                </div>
+            </div>
+            <div id="questionsOutput" class="questions-output"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by <strong>Gemini 2.5 Pro</strong> • LGS İngilizce Hazırlık Asistanı</p>
+    </footer>
+
+    <script src="js/prompts.js"></script>
+    <script src="js/gemini.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
