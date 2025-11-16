@@ -413,12 +413,16 @@ function generatePrompt(type, difficulty, count, topic = null) {
     }
 
     finalPrompt += `ÖNEMLİ:
-- Sadece JSON formatında yanıt ver, başka açıklama yazma
+- Yanıtını SADECE geçerli JSON formatında ver, başka hiçbir metin ekleme
 - JSON geçerli ve parse edilebilir olmalı
 - Tüm string değerlerde Türkçe karakter kullanabilirsin
 - Her sorunun mutlaka detaylı 'explanation' alanı olmalı
 - Sorular özgün, kopya değil, yeni üretilmiş olmalı
-- MEB LGS kalite standartlarını kesinlikle koru`;
+- MEB LGS kalite standartlarını kesinlikle koru
+- Yanıtın root seviyesinde bir JSON objesi veya array olmalı
+
+ÇIKTI FORMATI:
+${count > 1 || type === 'mixed' ? 'Bir JSON array döndür: {"questions": [...sorular...]}' : 'Tek bir JSON objesi döndür: {...soru...}'}`;
 
     return finalPrompt;
 }
