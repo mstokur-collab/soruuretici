@@ -237,6 +237,66 @@ header h1 {
     flex-wrap: wrap;
 }
 
+/* Provider Selection */
+.provider-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.provider-option {
+    cursor: pointer;
+}
+
+.provider-option input[type="radio"] {
+    display: none;
+}
+
+.provider-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    transition: all 0.3s ease;
+}
+
+.provider-card:hover {
+    border-color: var(--primary-color);
+    background: #e8f0fe;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.provider-option input[type="radio"]:checked + .provider-card {
+    border-color: var(--success-color);
+    background: #e6f4ea;
+    box-shadow: var(--shadow-md);
+}
+
+.provider-icon {
+    font-size: 2rem;
+}
+
+.provider-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.provider-info strong {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.provider-info span {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
 /* Help Text */
 .help-text {
     margin-top: 15px;

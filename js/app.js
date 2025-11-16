@@ -6,6 +6,8 @@
 class LGSQuestionGenerator {
     constructor() {
         this.currentQuestions = null;
+        this.currentProvider = 'chatgpt'; // Varsayılan provider
+        this.currentAPI = chatgptAPI; // Varsayılan API instance
         this.init();
     }
 
@@ -15,6 +17,7 @@ class LGSQuestionGenerator {
     init() {
         this.initializeElements();
         this.attachEventListeners();
+        this.loadProviderFromStorage();
         this.loadApiKeyFromStorage();
         this.checkApiKeyStatus();
     }
@@ -23,6 +26,13 @@ class LGSQuestionGenerator {
      * DOM elementlerini referansla
      */
     initializeElements() {
+        // Provider seçimi
+        this.providerChatGPT = document.getElementById('providerChatGPT');
+        this.providerGemini = document.getElementById('providerGemini');
+        this.headerSubtitle = document.getElementById('headerSubtitle');
+        this.loadingSubtext = document.getElementById('loadingSubtext');
+        this.footerProvider = document.getElementById('footerProvider');
+
         // API Key bölümü
         this.apiKeyInput = document.getElementById('apiKeyInput');
         this.saveApiKeyBtn = document.getElementById('saveApiKey');
@@ -31,6 +41,9 @@ class LGSQuestionGenerator {
         this.apiStatus = document.getElementById('apiStatus');
         this.statusIndicator = document.getElementById('statusIndicator');
         this.statusText = document.getElementById('statusText');
+        this.apiKeyHelpTitle = document.getElementById('apiKeyHelpTitle');
+        this.apiKeyHelpContent = document.getElementById('apiKeyHelpContent');
+        this.apiKeyLink = document.getElementById('apiKeyLink');
 
         // Soru üretici bölümü
         this.questionGeneratorSection = document.getElementById('questionGeneratorSection');
@@ -53,6 +66,10 @@ class LGSQuestionGenerator {
      * Event listener'ları bağla
      */
     attachEventListeners() {
+        // Provider değişikliği
+        this.providerChatGPT.addEventListener('change', () => this.onProviderChange('chatgpt'));
+        this.providerGemini.addEventListener('change', () => this.onProviderChange('gemini'));
+
         // API Key yönetimi
         this.saveApiKeyBtn.addEventListener('click', () => this.saveApiKey());
         this.clearApiKeyBtn.addEventListener('click', () => this.clearApiKey());
@@ -71,13 +88,94 @@ class LGSQuestionGenerator {
     }
 
     /**
+     * LocalStorage'dan Provider tercihini yükle
+     */
+    loadProviderFromStorage() {
+        const savedProvider = localStorage.getItem('ai_provider') || 'chatgpt';
+        this.currentProvider = savedProvider;
+
+        // Radio button'ı seç
+        if (savedProvider === 'chatgpt') {
+            this.providerChatGPT.checked = true;
+        } else {
+            this.providerGemini.checked = true;
+        }
+
+        // UI'yı güncelle
+        this.updateUIForProvider(savedProvider);
+    }
+
+    /**
+     * Provider değişikliğini işle
+     */
+    onProviderChange(provider) {
+        this.currentProvider = provider;
+        localStorage.setItem('ai_provider', provider);
+
+        // API instance'ı değiştir
+        this.currentAPI = provider === 'chatgpt' ? chatgptAPI : geminiAPI;
+
+        // UI'yı güncelle
+        this.updateUIForProvider(provider);
+
+        // API Key'i temizle ve yeniden yükle
+        this.loadApiKeyFromStorage();
+        this.checkApiKeyStatus();
+
+        this.showNotification(`${provider === 'chatgpt' ? 'ChatGPT' : 'Gemini'} seçildi`, 'info');
+    }
+
+    /**
+     * Provider'a göre UI'yı güncelle
+     */
+    updateUIForProvider(provider) {
+        if (provider === 'chatgpt') {
+            // ChatGPT için UI
+            this.currentAPI = chatgptAPI;
+            this.headerSubtitle.textContent = 'ChatGPT ile profesyonel sınav soruları';
+            this.loadingSubtext.textContent = 'ChatGPT, MEB standartlarında sorular hazırlıyor';
+            this.footerProvider.textContent = 'ChatGPT';
+            this.apiKeyInput.placeholder = 'OpenAI API Key\'inizi buraya girin';
+            this.apiKeyHelpTitle.textContent = 'OpenAI API Key nasıl alınır?';
+            this.apiKeyLink.href = 'https://platform.openai.com/api-keys';
+            this.apiKeyLink.textContent = 'OpenAI Platform';
+            this.apiKeyHelpContent.innerHTML = `
+                1. <a href="https://platform.openai.com/api-keys" target="_blank" id="apiKeyLink">OpenAI Platform</a>'a gidin<br>
+                2. "Create new secret key" butonuna tıklayın<br>
+                3. Oluşan key'i kopyalayıp buraya yapıştırın
+            `;
+            document.title = 'LGS İngilizce Soru Üretici | ChatGPT';
+        } else {
+            // Gemini için UI
+            this.currentAPI = geminiAPI;
+            this.headerSubtitle.textContent = 'Gemini ile profesyonel sınav soruları';
+            this.loadingSubtext.textContent = 'Gemini, MEB standartlarında sorular hazırlıyor';
+            this.footerProvider.textContent = 'Gemini';
+            this.apiKeyInput.placeholder = 'Google AI API Key\'inizi buraya girin';
+            this.apiKeyHelpTitle.textContent = 'Google AI API Key nasıl alınır?';
+            this.apiKeyLink.href = 'https://aistudio.google.com/app/apikey';
+            this.apiKeyLink.textContent = 'Google AI Studio';
+            this.apiKeyHelpContent.innerHTML = `
+                1. <a href="https://aistudio.google.com/app/apikey" target="_blank" id="apiKeyLink">Google AI Studio</a>'ya gidin<br>
+                2. "Create API Key" butonuna tıklayın<br>
+                3. Oluşan key'i kopyalayıp buraya yapıştırın
+            `;
+            document.title = 'LGS İngilizce Soru Üretici | Gemini';
+        }
+    }
+
+    /**
      * LocalStorage'dan API Key yükle
      */
     loadApiKeyFromStorage() {
-        const savedKey = localStorage.getItem('openai_api_key');
+        const storageKey = this.currentProvider === 'chatgpt' ? 'openai_api_key' : 'gemini_api_key';
+        const savedKey = localStorage.getItem(storageKey);
+
         if (savedKey) {
             this.apiKeyInput.value = savedKey;
-            chatgptAPI.setApiKey(savedKey);
+            this.currentAPI.setApiKey(savedKey);
+        } else {
+            this.apiKeyInput.value = '';
         }
     }
 
@@ -85,7 +183,8 @@ class LGSQuestionGenerator {
      * API Key durumunu kontrol et
      */
     async checkApiKeyStatus() {
-        const savedKey = localStorage.getItem('openai_api_key');
+        const storageKey = this.currentProvider === 'chatgpt' ? 'openai_api_key' : 'gemini_api_key';
+        const savedKey = localStorage.getItem(storageKey);
 
         if (!savedKey) {
             this.updateApiStatus(false, 'API Key girilmedi');
@@ -95,7 +194,7 @@ class LGSQuestionGenerator {
 
         this.updateApiStatus(null, 'Kontrol ediliyor...');
 
-        const validation = await chatgptAPI.validateApiKey();
+        const validation = await this.currentAPI.validateApiKey();
 
         if (validation.valid) {
             this.updateApiStatus(true, 'API Key aktif ve geçerli ✓');
@@ -139,11 +238,12 @@ class LGSQuestionGenerator {
         this.saveApiKeyBtn.disabled = true;
 
         try {
-            chatgptAPI.setApiKey(apiKey);
-            const validation = await chatgptAPI.validateApiKey();
+            this.currentAPI.setApiKey(apiKey);
+            const validation = await this.currentAPI.validateApiKey();
 
             if (validation.valid) {
-                localStorage.setItem('openai_api_key', apiKey);
+                const storageKey = this.currentProvider === 'chatgpt' ? 'openai_api_key' : 'gemini_api_key';
+                localStorage.setItem(storageKey, apiKey);
                 this.updateApiStatus(true, 'API Key başarıyla kaydedildi ✓');
                 this.questionGeneratorSection.style.display = 'block';
                 this.showNotification('API Key başarıyla kaydedildi!', 'success');
@@ -168,8 +268,9 @@ class LGSQuestionGenerator {
         }
 
         this.apiKeyInput.value = '';
-        localStorage.removeItem('openai_api_key');
-        chatgptAPI.setApiKey('');
+        const storageKey = this.currentProvider === 'chatgpt' ? 'openai_api_key' : 'gemini_api_key';
+        localStorage.removeItem(storageKey);
+        this.currentAPI.setApiKey('');
         this.updateApiStatus(false, 'API Key temizlendi');
         this.questionGeneratorSection.style.display = 'none';
         this.resultsSection.style.display = 'none';
@@ -211,11 +312,19 @@ class LGSQuestionGenerator {
 
             console.log('Gönderilen prompt:', prompt);
 
-            // API çağrısı
-            const result = await chatgptAPI.generateQuestions(prompt, {
-                temperature: 0.9,
-                maxTokens: 4000
-            });
+            // API çağrısı - provider'a göre farklı parametreler
+            let result;
+            if (this.currentProvider === 'chatgpt') {
+                result = await this.currentAPI.generateQuestions(prompt, {
+                    temperature: 0.9,
+                    maxTokens: 4000
+                });
+            } else {
+                result = await this.currentAPI.generateQuestions(prompt, {
+                    temperature: 0.9,
+                    maxOutputTokens: 8192
+                });
+            }
 
             if (result.success) {
                 // ChatGPT yanıtını işle - eğer "questions" anahtarı varsa onu kullan
